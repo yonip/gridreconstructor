@@ -32,14 +32,49 @@ import java.util.LinkedList;
  * Created by yonipedersen on 7/30/16.
  */
 public class ReconImage extends TabPane {
+    /**
+     * the label to put over the graph
+     */
     private String name;
+
+    /**
+     * The color red packed into an int using the ARGB color format. <br/>
+     * Used to make color code slightly more readable.
+     */
     private static final int RED = 0xFFFF0000;
+    /**
+     * The color white packed into an int using the ARGB color format. <br/>
+     * Used to make color code slightly more readable.
+     */
     private static final int WHITE = 0xFFFFFFFF;
+    /**
+     * The color blue packed into an int using the ARGB color format. <br/>
+     * Used to make color code slightly more readable.
+     */
     private static final int BLUE = 0xFF0000FF;
+
+    /**
+     * The number of column sensors in the grid.
+     */
     private int width;
+    /**
+     * The number of row sensors in the grid.
+     */
     private int height;
+    /**
+     * How many pixels wide each column should appear in the image. <br/>
+     * The image's total width is wscale * {@link #width}
+     */
     private int wscale;
+    /**
+     * How many pixels tall each row should appear in the image. <br/>
+     * The image's total height is hscale * {@link #height}
+     */
     private int hscale;
+
+    /**
+     * The minimum value that should be plotted on the graph of each sensor.
+     */
     private DoubleProperty min = new DoublePropertyBase() {
         @Override
         public Object getBean() {
@@ -51,6 +86,9 @@ public class ReconImage extends TabPane {
             return "min";
         }
     };
+    /**
+     * The maximum value that should be plotted on the graph of each sensor.
+     */
     private DoubleProperty max = new DoublePropertyBase() {
         @Override
         public Object getBean() {
@@ -62,79 +100,252 @@ public class ReconImage extends TabPane {
             return "max";
         }
     };
+
+    /**
+     * How much weight should be given to the value read from each row sensor. Should probably be between 0 and 1.
+     */
     private double rscale;
+    /**
+     * How much weight should be given to the value read from each column sensor. Should probably be between 0 and 1.
+     */
     private double cscale;
+
+    /**
+     * The baseline values of each column sensor, in order, where index 0 is the leftmost column sensor, and index length-1
+     * is the rightmost column sensor. <br/>
+     * The length of this array will be declared to be {@link #width}
+     */
     private double[] baselineCols;
+    /**
+     * The baseline values of each column sensor, in order, where index 0 is the topmost row sensor, and index length-1
+     * is the bottom row sensor. <br/>
+     * The length of this array will be declared to be {@link #height}
+     */
     private double[] baselineRows;
+
+    /**
+     * A buffer containing the values read from the sensors in the past, where the last element of the list is the most
+     * recent reading. <br/>
+     * Each array that is an element of this list is in the usual format, where the size of the array matches the number
+     * of row sensors (see {@link #height}, and the first value is the topmost row sensor, and the last is the bottommost
+     * row sensor.
+     */
     private LinkedList<double[]> rowBuffer;
+    /**
+     * A buffer containing the values read from the sensors in the past, where the last element of the list is the most
+     * recent reading. <br/>
+     * Each array that is an element of this list is in the usual format, where the size of the array matches the number
+     * of column sensors (see {@link #width}, and the first value is the leftmost column sensor, and the last is the rightmost
+     * column sensor.
+     */
     private LinkedList<double[]> colBuffer;
+    /**
+     * The fraction of the image that is needed at minimum to trigger an "event" where the whole graph is displayed, the
+     * graph is frozen for a second and the face is "angry".
+     */
     private double significant = 5.0/64;
+    /**
+     * The amount of time the graph and face should be frozen for after an "event" (in milis)
+     */
     private long delay;
+    /**
+     * When the last "event" occured (in milis)
+     */
     private long imgPauseStart;
+    /**
+     * A representation of the grid that can easily be converted to colors, as each State is associate with a color.
+     */
     private State[][] state;
+    /**
+     * The old representation of the grid, which just stored the assumed value of each pixel to be converted to a color
+     * gradient, determined by {@link #min} and {@link #max}
+     */
     private double[][] grid;
+    /**
+     * The drop that needs to be observed to rebaseline a sensor.
+     */
     private double thresholdToRebasline = 2;
+    /**
+     * A reference to the ImageView in the fxml that will show the recreated image from the grid of sensors.
+     */
     @FXML
     private ImageView gridImg;
+    /**
+     * A reference to the ImageView in the fxml that will show the color associated with a hard touch.
+     */
     @FXML
     private ImageView hardImage;
+    /**
+     * A reference to the ImageView in the fxml that will show the color associated with a medium touch.
+     */
     @FXML
     private ImageView mediumImage;
+    /**
+     * A reference to the ImageView in the fxml that will show the color associated with a soft touch.
+     */
     @FXML
     private ImageView softImage;
+    /**
+     * A reference to the ImageView in the fxml that will show the color associated with no touch.
+     */
     @FXML
     private ImageView noneImage;
+    /**
+     * A reference to the Text in the fxml that will show the name in of this object, as set in {@link #name}.
+     */
     @FXML
     private Text title;
+    /**
+     * A reference to the Text in the fxml that will show what the {@link #redSlider} is set to.
+     */
     @FXML
     private Text redText;
+    /**
+     * A reference to the Text in the fxml that will show what the {@link #greenSlider} is set to.
+     */
     @FXML
     private Text greenText;
+    /**
+     * A reference to the Text in the fxml that will show what the {@link #blueSlider} is set to.
+     */
     @FXML
     private Text blueText;
+    /**
+     * A reference to the Slider in the fxml that will dictate what difference from the baseline will be counted as a
+     * {@link State#HARD} value, and therefore appear to be red.
+     */
     @FXML
     private Slider redSlider;
+    /**
+     * A reference to the Slider in the fxml that will dictate what difference from the baseline will be counted as a
+     * {@link State#NORMAL} value, and therefore appear to be green.
+     */
     @FXML
     private Slider greenSlider;
+    /**
+     * A reference to the Slider in the fxml that will dictate what difference from the baseline will be counted as a
+     * {@link State#SOFT} value, and therefore appear to be blue.
+     */
     @FXML
     private Slider blueSlider;
+    /**
+     * A reference to the VBox in the fxml that will later be filled with the labels for the rows.
+     */
     @FXML
     private VBox rowLables;
+    /**
+     * A reference to the HBox in the fxml that will later be filled with the labels for the columns.
+     */
     @FXML
     private HBox colLables;
+    /**
+     * A reference to the Canvas in the fxml that will be used to graph the values of a row sensor selected by {@link #rowGraphPicker}.
+     */
     @FXML
     private Canvas rowCanvas;
+    /**
+     * A reference to the Canvas in the fxml that will be used to graph the values of a column sensor selected by {@link #colGraphPicker}.
+     */
     @FXML
     private Canvas colCanvas;
+    /**
+     * A reference to the ChoiceBox in the fxml that will be used to select the row sensor to graph on {@link #rowCanvas}.
+     */
     @FXML
     private ChoiceBox rowGraphPicker;
+    /**
+     * A reference to the ChoiceBox in the fxml that will be used to select the column sensor to graph on {@link #colCanvas}.
+     */
     @FXML
     private ChoiceBox colGraphPicker;
+    /**
+     * A reference to the ImageView in the fxml that will be used to show the "face" of the program/robot.
+     */
     @FXML
     private ImageView faceImg;
+    /**
+     * A reference to the CheckBox in the fxml that, when checked, will only show the maximum value on the grid.
+     */
     @FXML
     private CheckBox maxOnly;
+    /**
+     * A reference to the CheckBox in the fxml that, when checked, will graph the baseline of the sensor on the same graph
+     * as its current value.
+     */
     @FXML
     private CheckBox graphBaseline;
+    /**
+     * A reference to the CheckBox in the fxml that, when checked, will mae the program freeze after an "event," to emphasize
+     * it.
+     */
     @FXML
     private CheckBox freeze;
+    /**
+     * A reference to the CheckBox in the fxml that, when checked, will amplify the value of the maximum when {@link #maxOnly}
+     * is not selected (and if the max isn't {@link State#NONE}.
+     */
     @FXML
     private CheckBox amplifyMax;
+    /**
+     * A reference to the CheckBox in the fxml that, when checked, will ignore {@link #maxOnly} when an event happens, and
+     * will also ignore {@link #amplifyMax}.
+     */
     @FXML
     private CheckBox exitMax;
+    /**
+     * A reference to the TextBox in the fxml that will allow the user to set {@link #min} while the program is running.
+     */
     @FXML
     private TextField minBox;
+    /**
+     * A reference to the TextBox in the fxml that will allow the user to set {@link #max} while the program is running.
+     */
     @FXML
     private TextField maxBox;
+    /**
+     * A WritableImage for {@link #gridImg} so that it is possible to edit the image with new data. It is wrapped in a
+     * ObjectProperty so that if the image ever has to be recreated (when, for example, the  dimensions of the image
+     * need to change) gridImg will update as well.
+     */
     private ObjectProperty<WritableImage> img;
+    /**
+     * The number of data points to show on the graph of a sensor.
+     */
     private int dataPointsOnGraph = 100;
+    /**
+     * Whether {@link #min} and {@link #max} should be updated every frame to match the minimum and maximum of each sample.
+     */
     private boolean autoMax;
+    /**
+     * An Image that contains a reference to an "angry" face, to be used in {@link #faceImg} when the program/robot is
+     * "angry"/"hurt".
+     */
     private Image angry;
+    /**
+     * An Image that contains a reference to an "neutral" face, to be used in {@link #faceImg} when the program/robot is
+     * neutral/default state
+     */
     private Image neutral;
+    /**
+     * The row of the pixel that had the highest value in the last update.
+     */
     private int maxRow;
+    /**
+     * The column of the pixel that had the highest value in the last update.
+     */
     private int maxCol;
+    /**
+     * The value of the pixel that had the highest value in the last update.
+     */
     private double maxVal;
+    /**
+     * Whether an "event" is occurring right now.
+     */
     private volatile boolean event;
+    /**
+     * A runnable to update the grid image. This must be used because JavaFX only allows images to be updated in the JavaFX
+     * thread.
+     */
     private Runnable updateImage = new Runnable() {
         @Override
         public void run() {
@@ -173,6 +384,10 @@ public class ReconImage extends TabPane {
             }
         }
     };
+    /**
+     * A runnable to update the graphs image. This must be used because JavaFX only allows images to be updated in the JavaFX
+     * thread.
+     */
     private Runnable updateGraphs = new Runnable() {
         @Override
         public void run() {
@@ -218,6 +433,11 @@ public class ReconImage extends TabPane {
         }
     };
 
+    /**
+     * Gets a state that is one level higher than the current one. Used when {@link #amplifyMax} is checked.
+     * @param s a State of which a higher value is wanted
+     * @return a state one higher if the given state is SOFT or NORMAL. Otherwise, the same state is returned.
+     */
     private static State nextState(State s) {
         switch (s) {
             case SOFT:
@@ -231,6 +451,9 @@ public class ReconImage extends TabPane {
         }
     }
 
+    /**
+     * A constructor to make JavaFX Scene Builder notice this construct as a valid JavaFX object.
+     */
     public ReconImage() {
         FXMLLoader l = new FXMLLoader(ReconImage.class.getResource("/recon_image.fxml"));
         l.setRoot(this);
@@ -243,6 +466,11 @@ public class ReconImage extends TabPane {
         }
     }
 
+    /**
+     * Gets a color from a linear gradient (blue to white to red) based on t, where t represents the location on the gradient
+     * @param t a double between 0 and 1
+     * @return a color packed into an int in the ARGB format.
+     */
     private static int getColor(double t) {
         if (t > .5) {
             return lerpColor(WHITE, RED, (t-0.5)*2);
@@ -255,6 +483,15 @@ public class ReconImage extends TabPane {
         }
     }
 
+    /**
+     * Gets the appropriate color for a State: <br/>
+     * {@link State#HARD} maps to red. <br/>
+     * {@link State#NORMAL} maps to green. <br/>
+     * {@link State#SOFT} maps to blue. <br/>
+     * {@link State#NONE} maps to black. <br/>
+     * @param s a State to get the color for
+     * @return the associated color packed into an int using the ARGB format
+     */
     private static int getColor(State s) {
         switch (s) {
             case SOFT:
@@ -343,6 +580,10 @@ public class ReconImage extends TabPane {
         return (a << 24) | (r << 16) | (g << 8) | b;
     }
 
+    /**
+     * Initializes the images and sliders of this program. <br/>
+     * Called when JavaFX loads this class.
+     */
     @FXML
     private void initialize() {
         this.img = new ObjectPropertyBase<WritableImage>(new WritableImage(1, 1)) {
@@ -388,6 +629,9 @@ public class ReconImage extends TabPane {
         this.faceImg.setImage(neutral);
     }
 
+    /**
+     * Called by JavaFX when a certain button is pressed, and theoretically updates the min and the max.
+     */
     @FXML
     private void updateSettings() {
         try {
@@ -407,6 +651,20 @@ public class ReconImage extends TabPane {
 
     }
 
+    /**
+     * A method used to set the parameters of the program that aren't set by JavaFX.
+     * @param name The title/label of this graph.
+     * @param width The number of column sensors in the sensor array.
+     * @param height The number of row sensors in the sensor array.
+     * @param wscale How many pixels wide each column should appear in the image.
+     * @param hscale How many pixels tall each row should appear in the image.
+     * @param max The maximum value that should be plotted on the graph of each sensor.
+     * @param min The minimum value that should be plotted on the graph of each sensor.
+     * @param rscale A double between 0 and 1 that dictates how much weight should be given to the value read from each row sensor.
+     * @param cscale A double between 0 and 1 that dictates how much weight should be given to the value read from each column sensor.
+     * @param autoMax Whether min and max should be updated every frame to match the minimum and maximum of each sample.
+     * @param delay The amount of time the graph and face should be frozen for after an "event" (in milis).
+     */
     public void setContext(String name, int width, int height, int wscale, int hscale, double max, double min, double rscale,
                       double cscale, boolean autoMax, long delay) {
         this.name = name;
@@ -458,6 +716,11 @@ public class ReconImage extends TabPane {
         this.rowGraphPicker.getSelectionModel().select(0);
     }
 
+    /**
+     * A utility method that created a Pane with the given String as text, and formats the text correctly.
+     * @param text A String to put inside the pane, or null or "" if it should be left blank
+     * @return a Pane with the text aligned to the center
+     */
     private static Pane paneWithText(String text) {
         StackPane p = new StackPane();
         if (text != null && !text.isEmpty()) {
@@ -468,6 +731,13 @@ public class ReconImage extends TabPane {
         return p;
     }
 
+    /**
+     * Creates and Image of the given dimensions with the given color.
+     * @param width the width of the image, ideally positive.
+     * @param height the height of the image, ideally positive.
+     * @param color the color to put in the image, packed into an int using the ARGB format.
+     * @return an image of the given size and color.
+     */
     private static Image getImageWithColor(int width, int height, int color) {
         WritableImage img = new WritableImage(width, height);
         for (int r = 0; r < height; r++) {
@@ -478,6 +748,11 @@ public class ReconImage extends TabPane {
         return img;
     }
 
+    /**
+     * Updates this object with new data. If any of the arrays are null, this update is ignored.
+     * @param columns an array of size {@link #width} of the values of the column sensors.
+     * @param rows an array of size {@link #width} of the values of the column sensors.
+     */
     public void update(final double[] columns, final double[] rows) {
         // check for null and update baselines
         if (columns == null || rows == null) {
@@ -563,8 +838,21 @@ public class ReconImage extends TabPane {
         Platform.runLater(updateGraphs);
     }
 
+    /**
+     * Gets the total change for a given sensor over a certain period of time. If the buffer does not go far enough, then
+     * this method simply stops at the end of the buffer and returns the change up until then.
+     * @param buffer A LinkedList containing the history of the sensor's values.
+     * @param index The index of the sensor in the arrays of the LinkedList.
+     * @param amount How far back to go.
+     * @param cur The current value of the sensor.
+     * @return The total change of the sensor over the given range.
+     */
     private static double delta(LinkedList<double[]> buffer, int index, int amount, double cur) {
+        // this whole thing can probably be reduced to "return cur-buffer.get(buffer.size()-amount)" but this can probably
+        // be used to make something more helpful in the future. I think. Either way, this doesn't increase runtime by much
+        // as it will have to step through the linked list anyway.
         Iterator<double[]> itr = buffer.descendingIterator();
+        buffer.get(1);
         int i = 0;
         double prev;
         double totalChange = 0;
@@ -576,6 +864,9 @@ public class ReconImage extends TabPane {
         return totalChange;
     }
 
+    /**
+     * An enum used for coloring the grid.
+     */
     private enum State {
         SOFT, NORMAL, HARD, NONE
     }
