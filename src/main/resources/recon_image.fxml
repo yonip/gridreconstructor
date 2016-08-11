@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.*?>
@@ -105,7 +104,13 @@
                         </VBox>
                      </children>
                   </VBox>
-                  <ImageView fx:id="faceImg" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+                  <VBox>
+                     <children>
+                        <ImageView fx:id="faceImg" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+                        <Button mnemonicParsing="false" onAction="#promptFilePath" text="Set output file" />
+                        <Button fx:id="toggleLogging" mnemonicParsing="false" onAction="#toggleLogging" text="Start logging" />
+                     </children>
+                  </VBox>
                </children>
             </HBox>
          </content>

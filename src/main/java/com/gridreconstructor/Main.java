@@ -1,5 +1,6 @@
 package com.gridreconstructor;
 
+import com.gridreconstructor.util.Util;
 import com.sun.javafx.application.LauncherImpl;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -44,5 +45,6 @@ public class Main extends Application {
         if (Controller.port != null) {
             Controller.port.closePort();
         }
+        Util.close();
     }
 }

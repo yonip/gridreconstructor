@@ -12,6 +12,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
 import javafx.scene.control.*;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -22,8 +23,14 @@ import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
 
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -302,6 +309,8 @@ public class ReconImage extends TabPane {
      */
     @FXML
     private TextField maxBox;
+    @FXML
+    private Button toggleLogging;
     /**
      * A WritableImage for {@link #gridImg} so that it is possible to edit the image with new data. It is wrapped in a
      * ObjectProperty so that if the image ever has to be recreated (when, for example, the  dimensions of the image
@@ -432,6 +441,7 @@ public class ReconImage extends TabPane {
             }
         }
     };
+    private volatile boolean doLogging;
 
     /**
      * Gets a state that is one level higher than the current one. Used when {@link #amplifyMax} is checked.
@@ -458,7 +468,6 @@ public class ReconImage extends TabPane {
         FXMLLoader l = new FXMLLoader(ReconImage.class.getResource("/recon_image.fxml"));
         l.setRoot(this);
         l.setController(this);
-
         try {
             l.load();
         } catch (IOException exception) {
@@ -629,6 +638,39 @@ public class ReconImage extends TabPane {
         this.faceImg.setImage(neutral);
     }
 
+    public void postInit() {
+        if (Util.settings.optString(Util.LOGGING_PATH) == null || Util.settings.optString(Util.LOGGING_PATH).isEmpty() || !new File(Util.settings.optString(Util.LOGGING_PATH)).exists()) {
+            this.promptFilePath();
+        }
+    }
+
+    @FXML
+    private void promptFilePath() {
+        File f = Util.openSaveDialog("Pick a place to log the data", super.getScene().getWindow());
+        while (f == null) {
+            f = Util.openSaveDialog("Pick a REAL place to log the data", super.getScene().getWindow());
+        }
+        Util.settings.put(Util.LOGGING_PATH, f.getAbsolutePath());
+        if (!f.exists()) {
+            try {
+                Files.write(f.toPath(), Collections.singletonList(""), StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @FXML
+    private void toggleLogging() {
+        if (toggleLogging.getText().equals("Start logging")) {
+            toggleLogging.setText("Stop logging");
+            this.doLogging = true;
+        } else {
+            toggleLogging.setText("Start logging");
+            this.doLogging = false;
+        }
+    }
+
     /**
      * Called by JavaFX when a certain button is pressed, and theoretically updates the min and the max.
      */
@@ -758,6 +800,22 @@ public class ReconImage extends TabPane {
         if (columns == null || rows == null) {
             System.err.println(this.name + ": Either columns or rows were null, ignoring this update");
             return;
+        }
+        if (this.doLogging) {
+            try {
+                String output = "";
+                for (double d : columns) {
+                    output += d + ", ";
+                }
+
+                for (double d : rows) {
+                    output += d + ", ";
+                }
+                output = output.substring(0, output.length() - 1);
+                Files.write(Paths.get(Util.settings.getString(Util.LOGGING_PATH)), Collections.singletonList(output), StandardCharsets.UTF_8, StandardOpenOption.APPEND, StandardOpenOption.WRITE, StandardOpenOption.CREATE);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         double[] cols = new double[columns.length];
         double[] row = new double[rows.length];

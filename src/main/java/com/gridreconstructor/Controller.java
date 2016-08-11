@@ -72,11 +72,12 @@ public class Controller {
             // setup the data presentation screen
             reconFxmlLoader = new FXMLLoader(getClass().getResource("/reconstructors.fxml"));
             ((Stage)okButton.getScene().getWindow()).setScene(new Scene(reconFxmlLoader.load()));
+            GridReconstructor gr = reconFxmlLoader.<GridReconstructor>getController();
             if (port != null) {
-                GridReconstructor gr = reconFxmlLoader.<GridReconstructor>getController();
                 gr.setInput(port);
                 port.addEventListener(gr);
             }
+            gr.postInit();
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -97,6 +97,10 @@ public class GridReconstructor implements SerialPortEventListener {
         this.input = input;
     }
 
+    public void postInit() {
+        voltage.postInit();
+    }
+
     /**
      * gives the index of the buffer that isn't the current buffer.<br/>
      * can be used to easily swap buffers by setting {@link #currentBuffer} to the value retrieved from this method
