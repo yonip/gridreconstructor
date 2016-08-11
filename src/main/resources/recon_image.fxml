@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<fx:root type="TabPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <tabs>
+      <Tab text="Main">
+         <content>
+            <HBox prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+                     <children>
+                          <Text fx:id="title" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+                          <HBox spacing="5.0">
+                              <children>
+                              <BorderPane>
+                                 <center>
+                                        <ImageView fx:id="gridImg" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER" />
+                                 </center>
+                                 <left>
+                                    <VBox fx:id="rowLables" BorderPane.alignment="CENTER" />
+                                 </left>
+                                 <top>
+                                    <HBox fx:id="colLables" BorderPane.alignment="CENTER" />
+                                 </top>
+                              </BorderPane>
+                                  <VBox>
+                                 <children>
+                                    <HBox>
+                                       <children>
+                                              <ImageView fx:id="hardImage" pickOnBounds="true" preserveRatio="true" />
+                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Hard" />
+                                       </children>
+                                    </HBox>
+                                    <HBox>
+                                       <children>
+                                          <ImageView fx:id="mediumImage" pickOnBounds="true" preserveRatio="true" />
+                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Medium" />
+                                       </children>
+                                    </HBox>
+                                    <HBox>
+                                       <children>
+                                          <ImageView fx:id="softImage" pickOnBounds="true" preserveRatio="true" />
+                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Soft" />
+                                       </children>
+                                    </HBox>
+                                    <HBox>
+                                       <children>
+                                          <ImageView fx:id="noneImage" pickOnBounds="true" preserveRatio="true" />
+                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" text="None" />
+                                       </children>
+                                    </HBox>
+                                 </children>
+                                  </VBox>
+                              </children>
+                          </HBox>
+                        <VBox prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <Text fx:id="redText" strokeType="OUTSIDE" strokeWidth="0.0" text="Red start" />
+                              <Slider fx:id="redSlider" />
+                              <Text fx:id="greenText" strokeType="OUTSIDE" strokeWidth="0.0" text="Green start" />
+                              <Slider fx:id="greenSlider" />
+                              <Text fx:id="blueText" strokeType="OUTSIDE" strokeWidth="0.0" text="Blue start" />
+                              <Slider fx:id="blueSlider" />
+                              <CheckBox fx:id="maxOnly" mnemonicParsing="false" selected="true" text="Max only" />
+                              <CheckBox fx:id="graphBaseline" mnemonicParsing="false" selected="true" text="Graph baseline" />
+                              <CheckBox fx:id="freeze" mnemonicParsing="false" selected="true" text="Freeze on event" />
+                              <CheckBox fx:id="amplifyMax" mnemonicParsing="false" selected="true" text="Amplify max" />
+                              <CheckBox fx:id="exitMax" mnemonicParsing="false" selected="true" text="Exit max on event" />
+                           </children>
+                        </VBox>
+                     </children>
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                  </VBox>
+                  <VBox prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <VBox prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Row Sensors" />
+                              <HBox prefHeight="100.0" prefWidth="200.0">
+                                 <children>
+                                    <Canvas fx:id="rowCanvas" height="200.0" width="200.0" />
+                                    <ChoiceBox fx:id="rowGraphPicker" prefWidth="150.0" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                        <VBox prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Column Sensors" />
+                              <HBox prefHeight="100.0" prefWidth="200.0">
+                                 <children>
+                                    <Canvas fx:id="colCanvas" height="200.0" width="200.0" />
+                                    <ChoiceBox fx:id="colGraphPicker" prefWidth="150.0" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                  </VBox>
+                  <ImageView fx:id="faceImg" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+               </children>
+            </HBox>
+         </content>
+      </Tab>
+      <Tab text="Settings">
+         <content>
+            <VBox alignment="TOP_CENTER">
+               <children>
+                  <HBox alignment="CENTER_LEFT" VBox.vgrow="NEVER">
+                     <children>
+                        <Label text="Min: " />
+                        <TextField fx:id="minBox" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT">
+                     <children>
+                        <Label text="Max: " />
+                        <TextField fx:id="maxBox" />
+                     </children>
+                  </HBox>
+                  <Button fx:id="updateSettings" alignment="CENTER" mnemonicParsing="false" text="Update" />
+               </children>
+            </VBox>
+         </content>
+      </Tab>
+   </tabs>
+</fx:root>
