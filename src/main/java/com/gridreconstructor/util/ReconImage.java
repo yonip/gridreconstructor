@@ -779,12 +779,8 @@ public class ReconImage extends TabPane {
             }
         }
         if (rebaselineCount > 6) {
-            for (int i = 0; i< cols.length; i++) {
-                this.baselineCols[i] = cols[i];
-            }
-            for (int i = 0; i< rows.length; i++) {
-                this.baselineRows[i] = rows[i];
-            }
+            System.arraycopy(cols, 0, this.baselineCols, 0, cols.length);
+            System.arraycopy(rows, 0, this.baselineRows, 0 , rows.length);
         }
 
         this.rowBuffer.add(row);
