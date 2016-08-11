@@ -47,6 +47,5 @@ Temporary Items
 
 # IntelliJ
 .idea
-/out/
-!/out/artifacts
+/out/production
 *.iml
