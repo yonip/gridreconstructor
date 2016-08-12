@@ -102,6 +102,8 @@
                               </HBox>
                            </children>
                         </VBox>
+                        <Text fx:id="maxText" strokeType="OUTSIDE" strokeWidth="0.0" text="Max" />
+                        <Text fx:id="minText" strokeType="OUTSIDE" strokeWidth="0.0" text="Min" />
                      </children>
                   </VBox>
                   <VBox>
@@ -131,7 +133,7 @@
                         <TextField fx:id="maxBox" />
                      </children>
                   </HBox>
-                  <Button fx:id="updateSettings" alignment="CENTER" mnemonicParsing="false" text="Update" />
+                  <Button alignment="CENTER" mnemonicParsing="false" onAction="#updateSettings" text="Update" />
                </children>
             </VBox>
          </content>

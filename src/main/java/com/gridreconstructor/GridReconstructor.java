@@ -1,6 +1,7 @@
 package com.gridreconstructor;
 
 import com.gridreconstructor.util.ReconImage;
+import com.gridreconstructor.util.Util;
 import javafx.fxml.FXML;
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
@@ -86,7 +87,8 @@ public class GridReconstructor implements SerialPortEventListener {
      */
     @FXML
     public void initialize() {
-        voltage.setContext("Voltage", IMG_WIDTH, IMG_HEIGHT, IMG_WIDTH_SCALE, IMG_HEIGHT_SCALE, 900, 550, 1, 1, false, 1000);
+        voltage.setContext("Voltage", IMG_WIDTH, IMG_HEIGHT, IMG_WIDTH_SCALE, IMG_HEIGHT_SCALE, Util.settings.optDouble("graphMax", 900),
+                Util.settings.optDouble("graphMin", 550), 1, 1, false, 1000);
     }
 
     /**

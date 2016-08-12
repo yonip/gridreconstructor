@@ -84,6 +84,13 @@ public class ReconImage extends TabPane {
      */
     private DoubleProperty min = new DoublePropertyBase() {
         @Override
+        public void set(double v) {
+            super.set(v);
+            minText.setText("Min: "+v);
+            Util.settings.put("graphMin", v);
+        }
+
+        @Override
         public Object getBean() {
             return this;
         }
@@ -97,6 +104,13 @@ public class ReconImage extends TabPane {
      * The maximum value that should be plotted on the graph of each sensor.
      */
     private DoubleProperty max = new DoublePropertyBase() {
+        @Override
+        public void set(double v) {
+            super.set(v);
+            maxText.setText("Max: "+v);
+            Util.settings.put("graphMin", v);
+        }
+
         @Override
         public Object getBean() {
             return this;
@@ -309,8 +323,17 @@ public class ReconImage extends TabPane {
      */
     @FXML
     private TextField maxBox;
+    /**
+     * A Button in the fxml that is used to toggle logging on and off
+     * @see #doLogging
+     * @see #toggleLogging()
+     */
     @FXML
     private Button toggleLogging;
+    @FXML
+    private Text minText;
+    @FXML
+    private Text maxText;
     /**
      * A WritableImage for {@link #gridImg} so that it is possible to edit the image with new data. It is wrapped in a
      * ObjectProperty so that if the image ever has to be recreated (when, for example, the  dimensions of the image
@@ -441,6 +464,9 @@ public class ReconImage extends TabPane {
             }
         }
     };
+    /**
+     * Whether or not to log the incoming data to a file. The file should have been inputted by the user.
+     */
     private volatile boolean doLogging;
 
     /**
