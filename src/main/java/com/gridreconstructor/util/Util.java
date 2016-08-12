@@ -25,7 +25,8 @@ public class Util {
         Path p = new File(/*Util.class.getResource(path).toURI().getPath()*/path).toPath();
 
         if (!p.toFile().exists()) {
-            throw new RuntimeException("Configuration file does not exist!");
+            System.out.println("Configuration file does not exist!");
+            return new JSONObject();
         }
 
         try {
@@ -33,7 +34,7 @@ public class Util {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
+        return new JSONObject();
     }
 
     public static void writeObject(JSONObject object, String path) {
@@ -41,7 +42,8 @@ public class Util {
             Path p = new File(/*Util.class.getResource(path).toURI().getPath()*/path).toPath();
 
             if (!p.toFile().exists()) {
-                throw new RuntimeException("Configuration file does not exist!");
+                System.out.println("Configuration file does not exist!");
+                return;
             }
             Files.write(p, Arrays.asList(object.toString(2).split("\n")), StandardCharsets.UTF_8);
         } catch (IOException e) {
@@ -56,7 +58,6 @@ public class Util {
     }
 
     public static void close() {
-        System.out.println("test");
         writeObject(settings, SETTINGS_PATH);
     }
 }

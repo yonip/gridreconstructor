@@ -811,7 +811,7 @@ public class ReconImage extends TabPane {
                 for (double d : rows) {
                     output += d + ", ";
                 }
-                output = output.substring(0, output.length() - 1);
+                output = output.substring(0, output.length() - 2);
                 Files.write(Paths.get(Util.settings.getString(Util.LOGGING_PATH)), Collections.singletonList(output), StandardCharsets.UTF_8, StandardOpenOption.APPEND, StandardOpenOption.WRITE, StandardOpenOption.CREATE);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -906,7 +906,6 @@ public class ReconImage extends TabPane {
         // be used to make something more helpful in the future. I think. Either way, this doesn't increase runtime by much
         // as it will have to step through the linked list anyway.
         Iterator<double[]> itr = buffer.descendingIterator();
-        buffer.get(1);
         int i = 0;
         double prev;
         double totalChange = 0;
