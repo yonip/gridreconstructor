@@ -11,9 +11,9 @@
   </resources>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="GridImageReconstructor.jar" size="90429" download="eager" />
-    <jar href="json-20140107.jar" size="69826" download="eager" />
-    <jar href="jssc-2.8.0.jar" size="157188" download="eager" />
+    <jar href="GridImageReconstructor.jar" size="90385" download="eager" />
+    <jar href="json-20140107.jar" size="69825" download="eager" />
+    <jar href="jssc-2.8.0.jar" size="157191" download="eager" />
   </resources>
 <security>
   <all-permissions/>
